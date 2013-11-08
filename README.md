@@ -41,5 +41,9 @@ Writing a code to extract data from xml in general is cumbersome task.
 It is boring and can be time consuming. But if we focus on particular context,
 we might be able to change it like an ordinary text filtering one-liner.
 
-Here is key idea: Use ``$/ = "><"`` in Perl.
+Here is key idea: 
 
+* Use ``$/ = "><"`` in Perl.
+* tie ``@ARGV`` with auto unzip
+* provide sheetName access for command line.
+* Make the module itself runnable.
