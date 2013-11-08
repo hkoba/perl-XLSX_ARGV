@@ -47,3 +47,11 @@ Followings are key ideas:
 * Tie ``@ARGV`` to make ``while (<>)`` loop into selected sheets.
 * Provide sheetName access for command line.
 * Make the module itself runnable.
+
+COPYRIGHT AND LICENCE
+--------------------
+
+Copyright (C) 2013 "KOBAYASI, Hiroaki" <hkoba@cpan.org>
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.

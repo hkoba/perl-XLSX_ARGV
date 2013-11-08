@@ -6,9 +6,9 @@ use warnings FATAL => qw/all/;
 use sigtrap die => qw(normal-signals);
 use Carp;
 
+use Encode::Locale;
 use File::Spec;
 use Archive::Zip qw/:ERROR_CODES/;
-use List::Util qw/sum/;
 
 #========================================
 use fields qw/filename zip
@@ -144,7 +144,7 @@ sub member_fh {
   (my MY $self, my $fn) = @_;
   my $contents = $self->{zip}->contents($fn)
     or croak "Can't find $fn in $self->{filename}";
-  open my $fh, '<', \$contents
+  open my $fh, '<:encoding(utf8)', \$contents
     or croak "Can't open memory file for $fn: $!";
   $fh;
 }
@@ -157,9 +157,20 @@ sub tempfile {
 
 #========================================
 
-sub TIEARRAY {
+sub setup_global {
+  my ($class) = @_;
   $/ = "><";
-  shift->new(@_)
+  if (-t) {
+    binmode(STDOUT, ":encoding(console_out)");
+    binmode(STDERR, ":encoding(console_out)");
+  }
+  $class;
+}
+
+sub TIEARRAY {
+  my $class = shift;
+  $class->setup_global;
+  $class->new(@_)
 }
 
 sub SHIFT {
@@ -174,6 +185,8 @@ sub FETCHSIZE {
 #========================================
 
 unless (caller) {
+  MY->setup_global;
+
   my @init;
   while (@ARGV) {
     my $arg = shift @ARGV;
