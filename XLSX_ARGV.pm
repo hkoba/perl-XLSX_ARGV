@@ -28,8 +28,8 @@ use fields qw/filename zip
 #========================================
 
 sub import {
-  my ($class, $fn) = @_;
-  tie @main::ARGV, $class, $fn, @main::ARGV;
+  my ($class, $fn, @args) = @_;
+  tie @main::ARGV, $class, $fn, (@args ? @args : @main::ARGV);
 }
 
 #========================================
@@ -100,6 +100,7 @@ sub _sheet_member {
   my $sheetno = do {
     if (ref $key) {
       my SheetInfo $si = $key;
+      $si->{sheetId};
     } else {
       $key;
     }
@@ -109,12 +110,9 @@ sub _sheet_member {
 
 sub load_workbook {
   (my MY $self) = @_;
-  my $contents = $self->{zip}->contents("xl/workbook.xml")
-    or croak "Can't find workbook.xml in $self->{filename}";
   $self->{sheet_list} = [];
   $self->{sheet_name_dict} = {};
-  open my $fh, '<', \$contents
-    or croak "Can't open memory file: $!";
+  my $fh = $self->member_fh("xl/workbook.xml");
   local $/ = "><";
   local $_;
   my $line;
@@ -141,6 +139,15 @@ sub load_workbook {
 }
 
 #========================================
+
+sub member_fh {
+  (my MY $self, my $fn) = @_;
+  my $contents = $self->{zip}->contents($fn)
+    or croak "Can't find $fn in $self->{filename}";
+  open my $fh, '<', \$contents
+    or croak "Can't open memory file for $fn: $!";
+  $fh;
+}
 
 sub tempfile {
   (my MY $self, my $fn) = @_;
