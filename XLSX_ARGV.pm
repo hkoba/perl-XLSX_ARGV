@@ -21,7 +21,7 @@ use fields qw/filename zip
 {
   sub SheetInfo () {'XLSX_ARGV::SheetInfo'}
   package XLSX_ARGV::SheetInfo;
-  use fields qw/name sheetId r:id/;
+  use fields qw/name sheetId r:id state/;
   sub new {fields::new(shift)}
 }
 
